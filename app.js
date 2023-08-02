@@ -1,82 +1,82 @@
 let playIcon = document.querySelector(".play-icon");
 let audio = document.querySelector(".audio");
-//let progress = 0;
-
-
-let video = document.querySelector(".video video");
-
+let video = document.querySelector("video");
 let replayIcon = document.querySelector(".replay-icon");
 let timer = document.querySelector(".timer")
-let timeSelector = document.querySelectorAll("#time");
-
+let timeSelector = document.querySelectorAll("#time button");
+let selector = document.querySelectorAll("#selector i");
+//let pauseIcon = document.querySelector(".fa-pause");
+let distance = 2;
+let min = 0;
+let sec = 0;
+//updating audio time alogside progress circle and play icon
 audio.ontimeupdate = function() {
+    //min = 0
     let currentTime = audio.currentTime;
-    //console.log(currentTime);
-    //let elapsed = distance - currentTime;
     let timeLeft = distance - currentTime;
-    //let seconds = Math.floor(elapsed % 60);
-    //let minutes = Math.floor(elapsed / 60);
-    // timer.textContent = '${minutes}:${seconds}';
     let progress = (timeLeft / distance) * 100;
     document.querySelector(".progress-bar").style.background = "radial-gradient(closest-side, white 79%, transparent 80% 100%), conic-gradient(hotpink " + progress + "%, pink 0)";
-    //setProgress(progress);
+    let msec = Math.floor(currentTime);
+    if (Math.floor(currentTime) < 10) {
+        min = 0;
+    }
+    sec = msec % 60;
+    if (sec === 59) {
+        min = +1;
 
-    //outline.style.strokeDashoffset = progress;
-
-    if (currentTime >= destination) {
+    }
+    timer.textContent = min + " : " + sec;
+    if (currentTime >= distance) {
         audio.pause();
         audio.currentTime = 0;
-        play.src = "./svg/play.svg";
+        playIcon.className = "play-icon fa-sharp fa-regular fa-circle-play fa-xl";
         video.pause();
     }
 }
-
-
-
-
-
 
 function setProgress(progress) {
     document.querySelector(".progress-bar").style.background = "radial-gradient(closest-side, white 79%, transparent 80% 100%), conic-gradient(hotpink " + progress + "%, pink 0)";
 
 }
 
-//const outline = document.querySelector(".moving-outline circle");
-//const outlineLength = outline.getTotalLength();
-//let selector = document.querySelectorAll()
-// const outline = document.querySelector(".moving-outline circle");
 
-
-
+//when play button is clicked on and checking if audio/video is already on
 playIcon.addEventListener("click", () => {
-    //var audio1 = new Audio('sounds/rain.mp3');
-    // audio1.play();
-    checkPlay(audio);
-});
 
-//music
-let selector = document.querySelectorAll("#selector button");
-let distance = 2 * 60;
-selector.forEach(selected => {
-    selected.addEvenListener("click", () => {
-        audio.src = this.getAttribute("mood-sound");
-        video.src = this.getAttribute("mood-video");
+    if (playIcon.className == "fa-solid fa-pause") {
+        audio.pause();
+        video.pause();
+        playIcon.className = "play-icon fa-sharp fa-regular fa-circle-play fa-xl";
+    } else {
+        audio.src = "sounds/rain.mp3";
+        video.src = "video/rain.mp4";
         checkPlay(audio);
-    })
+    }
+
 });
 
 function checkPlay(audio) {
     if (audio.paused) {
         audio.play();
         video.play();
-        playIcon.className = "fa-solid fa-reply replay-icon"
+        playIcon.className = "fa-solid fa-pause"
     } else {
         audio.pause();
         video.pause();
-        playIcon.src = "";
+        playIcon.className = "play-icon fa-sharp fa-regular fa-circle-play fa-xl";
 
     }
 }
+
+//looping through selected icon and assigning audio
+selector.forEach(selected => {
+    selected.addEventListener("click", function() {
+        audio.src = this.getAttribute("data-sound");
+        video.src = this.getAttribute("data-video");
+        checkPlay(audio);
+    })
+});
+
 
 
 replayIcon.addEventListener("click", () => {
@@ -89,13 +89,13 @@ let replay = audio => {
 
 }
 
-let min = (1000 * 60 * 60 * 24) / (1000 * 60 * 60);
-let sec = (1000 * 60) / 1000;
-timer.textContent = min + " : " + sec;
+//setting on screen timer and countdown 
+timer.textContent = "0:00";
 
 timeSelector.forEach(selected => {
-    selected.addEventListener("click", () => {
-        distance = this, getAttribute("data-time");
+    selected.addEventListener("click", function() {
+        distance = this.getAttribute("data-time");
         timer.textContent = distance + ":00";
+        distance = distance * 60;
     })
 })
